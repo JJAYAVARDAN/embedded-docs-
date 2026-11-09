@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JJAYAVARDAN | Embedded Docs</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{background:#f4f5f7} .sidebar{position:fixed;left:0;top:0;width:260px;height:100vh;background:#0f1d3a;color:#fff;overflow:auto;padding:20px}
+.sidebar a{color:#b8c7e0;display:block;padding:8px 10px;text-decoration:none;border-radius:6px}
+.sidebar a:hover,.sidebar a.active{background:#1e3a6e;color:#fff}
+.content{margin-left:280px;padding:30px;max-width:900px}
+pre{background:#0d1117;color:#c9d1d9;padding:16px;border-radius:8px;overflow:auto}
+code{color:#ff7b72}
+.card{border:none;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+</style>
+</head>
+<body>
+<div class="sidebar">
+<h4>JJAYAVARDAN</h4><small>Embedded Docs</small><hr>
+<a href="#c" class="active">C for Embedded</a>
+<a href="#cpp">C++ / Embedded C++</a>
+<a href="#rtos">RTOS - FreeRTOS</a>
+<a href="#bt">Bluetooth Classic</a>
+<a href="#ble">BLE</a>
+<a href="#pi">Pi 4 Lab (4GB + SanDisk 3.2)</a>
+<a href="#projects">Projects</a>
+</div>
+<div class="content">
+<div class="card p-4 mb-4"><h1>Embedded Systems Archive</h1><p>Documenting C / C++ / Embedded C++ / RTOS / Bluetooth / BLE - like Confluence, hosted on GitHub Pages.</p><p><b>Setup:</b> Pi 4 4GB + SanDisk USB 3.2 + MagicRaven 1080p ₹5999</p></div>
+
+<div id="c" class="card p-4 mb-4"><h2>C for Embedded</h2>
+<pre><code>// volatile for ISR, bit ops
+#define SET_BIT(REG, BIT) ((REG) |= (1 << (BIT)))
+volatile uint32_t g_tick=0;
+void SysTick_Handler(void){ g_tick++; }</code></pre>
+<p>Notes: use stdint.h, avoid malloc in ISR, linker: .text .data .bss</p></div>
+
+<div id="cpp" class="card p-4 mb-4"><h2>C++ / Embedded C++</h2>
+<pre><code>class GPIO{
+public:
+ constexpr GPIO(uint32_t p,uint8_t pin):port_(p),pin_(pin){}
+ void set(){ *reinterpret_cast&lt;volatile uint32_t*&gt;(port_) |= (1U&lt;&lt;pin_); }
+private: uint32_t port_; uint8_t pin_;
+};</code></pre>
+<p>Rules: No exception, No RTTI, No new in hot path, RAII.</p></div>
+
+<div id="rtos" class="card p-4 mb-4"><h2>RTOS - FreeRTOS</h2>
+<pre><code>void vTask1(void *pv){
+ while(1){ vTaskDelay(pdMS_TO_TICKS(100)); }
+}
+xTaskCreate(vTask1,"T1",128,NULL,1,NULL);
+vTaskStartScheduler();</code></pre>
+<p>Queue, Semaphore, Mutex, priority inheritance, stack check.</p></div>
+
+<div id="bt" class="card p-4 mb-4"><h2>Bluetooth Classic</h2><p>SPP, A2DP, RFCOMM - Pi 4 BlueZ</p><pre><code>bluetoothctl
+scan on
+pair XX:XX:XX:XX
+</code></pre></div>
+
+<div id="ble" class="card p-4 mb-4"><h2>BLE</h2><p>Service 0x180F, Char 0x2A19. GATT, Advertising, MTU.</p>
+<pre><code>#include &lt;BLEDevice.h&gt;
+BLEDevice::init("ESP32_BLE");
+auto *pServer = BLEDevice::createServer();</code></pre></div>
+
+<div id="pi" class="card p-4 mb-4"><h2>Pi 4 Lab</h2><p>Optimizations done for SanDisk USB:</p><pre><code>sudo apt install zram-tools
+echo -e "ALGO=zstd\nPERCENT=50" | sudo tee /etc/default/zramswap
+# tmpfs /var/log to save USB life</code></pre></div>
+
+<div id="projects" class="card p-4 mb-4"><h2>Projects</h2><ul><li>BLE scanner on Pi 4</li><li>FreeRTOS ESP32 queue</li><li>I2C driver in Embedded C++</li></ul></div>
+
+</div>
+<script>
+document.querySelectorAll('.sidebar a').forEach(a=>{
+ a.onclick=()=>{document.querySelectorAll('.sidebar a').forEach(x=>x.classList.remove('active'));a.classList.add('active')}
+})
+</script>
+</div>
+</body>
+</html>
